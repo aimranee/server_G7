@@ -24,13 +24,14 @@ public class Serveur {
 
     public static void main(String[] args) {
         try {
+            int port = 1098;
             IDao<Machine> dao = new MachineService();
             
-            LocateRegistry.createRegistry(1099);
+            LocateRegistry.createRegistry(port);
             
-            Naming.bind("rmi://localhost:1099/dao", dao);
+            Naming.bind("rmi://localhost:"+port+"/dao", dao);
             
-            System.out.println("En attente des clients");
+            System.out.println("En attente des clients sur le port "+port);
             
         } catch (RemoteException ex) {
             Logger.getLogger(Serveur.class.getName()).log(Level.SEVERE, null, ex);
