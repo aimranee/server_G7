@@ -5,8 +5,9 @@
  */
 package server;
 
-import dao.IDao;
-import entities.Machine;
+import dao.IDaoMachine;
+import dao.IDaoSalle;
+import entities.*;
 import java.net.MalformedURLException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
@@ -15,6 +16,7 @@ import java.rmi.registry.LocateRegistry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import service.MachineService;
+import service.SalleService;
 
 /**
  *
@@ -25,11 +27,13 @@ public class Serveur {
     public static void main(String[] args) {
         try {
             int port = 1098;
-            IDao<Machine> dao = new MachineService();
+            IDaoMachine daoMachine = new MachineService();
+            IDaoSalle daoSalle = new SalleService();
             
             LocateRegistry.createRegistry(port);
             
-            Naming.bind("rmi://localhost:"+port+"/dao", dao);
+            Naming.bind("rmi://localhost:"+port+"/daoMachine", daoMachine);
+            Naming.bind("rmi://localhost:"+port+"/daoSalle", daoSalle);
             
             System.out.println("En attente des clients sur le port "+port);
             

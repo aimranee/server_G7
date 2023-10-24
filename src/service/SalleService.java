@@ -5,25 +5,29 @@
  */
 package service;
 
-import dao.IDaoMachine;
-import entities.Machine;
+import dao.IDaoSalle;
 import entities.Salle;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import util.HibernateUtil;
 
-public class MachineService extends UnicastRemoteObject implements IDaoMachine {
+/**
+ *
+ * @author aimrane
+ */
+public class SalleService extends UnicastRemoteObject implements IDaoSalle {
 
-    public MachineService() throws RemoteException {
+    public SalleService() throws RemoteException {
         super();
     }
 
     @Override
-    public boolean create(Machine o) throws RemoteException {
+    public boolean create(Salle o) throws RemoteException {
         Session session = null;
         Transaction tx = null;
         boolean etat = false;
@@ -47,7 +51,7 @@ public class MachineService extends UnicastRemoteObject implements IDaoMachine {
     }
 
     @Override
-    public boolean update(Machine o) throws RemoteException {
+    public boolean update(Salle o) throws RemoteException {
         Session session = null;
         Transaction tx = null;
         boolean etat = false;
@@ -68,11 +72,10 @@ public class MachineService extends UnicastRemoteObject implements IDaoMachine {
             }
         }
         return etat;
-
     }
 
     @Override
-    public boolean delete(Machine o) throws RemoteException {
+    public boolean delete(Salle o) throws RemoteException {
         Session session = null;
         Transaction tx = null;
         boolean etat = false;
@@ -96,14 +99,14 @@ public class MachineService extends UnicastRemoteObject implements IDaoMachine {
     }
 
     @Override
-    public Machine findById(int id) throws RemoteException {
+    public Salle findById(int id) throws RemoteException {
         Session session = null;
         Transaction tx = null;
-        Machine machine = null;
+        Salle salle = null;
         try {
             session = HibernateUtil.getSessionFactory().openSession();
             tx = session.beginTransaction();
-            machine = (Machine) session.get(Machine.class, id);
+            salle = (Salle) session.get(Salle.class, id);
             tx.commit();
         } catch (HibernateException ex) {
             if (tx != null) {
@@ -114,18 +117,45 @@ public class MachineService extends UnicastRemoteObject implements IDaoMachine {
                 session.close();
             }
         }
-        return machine;
+        return salle;
+    }
+    
+    @Override
+    public Salle findSalleByCode(String code) throws RemoteException {
+        Session session = null;
+        Transaction tx = null;
+        Salle salle = null;
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            tx = session.beginTransaction();
+
+            String hql = "FROM Salle s WHERE s.code = :salleCode";
+            Query query = session.createQuery(hql);
+            query.setParameter("salleCode", code);
+            salle = (Salle) query.uniqueResult();
+
+            tx.commit();
+        } catch (HibernateException ex) {
+            if (tx != null) {
+                tx.rollback();
+            }
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+        return salle;
     }
 
     @Override
-    public List<Machine> findAll() throws RemoteException {
+    public List<Salle> findAll() throws RemoteException {
         Session session = null;
         Transaction tx = null;
-        List<Machine> machines = null;
+        List<Salle> salles = null;
         try {
             session = HibernateUtil.getSessionFactory().openSession();
             tx = session.beginTransaction();
-            machines = session.getNamedQuery("findAllNative").list();
+            salles = session.getNamedQuery("findAllNativeS").list();
             tx.commit();
         } catch (HibernateException ex) {
             if (tx != null) {
@@ -136,29 +166,7 @@ public class MachineService extends UnicastRemoteObject implements IDaoMachine {
                 session.close();
             }
         }
-        return machines;
-    }
-
-    public List<Machine> findAllMachinesBySalle(int salleId) throws RemoteException {
-        Session session = null;
-        Transaction tx = null;
-        List<Machine> machines = null;
-        try {
-            session = HibernateUtil.getSessionFactory().openSession();
-            tx = session.beginTransaction();
-            String sql = "SELECT * FROM machine WHERE salle_id = "+ salleId;
-            machines = session.createSQLQuery(sql).list();
-            tx.commit();
-        } catch (HibernateException ex) {
-            if (tx != null) {
-                tx.rollback();
-            }
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-        }
-        return machines;
+        return salles;
     }
 
 }
