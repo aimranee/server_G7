@@ -23,14 +23,14 @@ public class Test {
         try {
 
             SalleService ss = new SalleService();
-            
+
             //System.out.println(" ==> "+ss.findByCode("A1"));
             /*ss.create(new Salle("A1"));
-            ss.create(new Salle("A2"));
-            ss.create(new Salle("A3"));
-            for (Salle s : ss.findAll()) {
-                System.out.println(s);
-            }*/
+             ss.create(new Salle("A2"));
+             ss.create(new Salle("A3"));
+             for (Salle s : ss.findAll()) {
+             System.out.println(s);
+             }*/
             //System.out.println("test : "+ss.findByCode("A1"));
             MachineService ms = new MachineService();
             /*ms.create(new Machine("RE44", "HP", 2000, ss.findById(1)));
@@ -43,8 +43,9 @@ public class Test {
              System.out.println(m);
              }*/
 
-            /*for(Machine m : ms.findAllMachinesBySalle(1))
-             System.out.println(m);*/
+            for (Machine m : ms.findAllMachinesBySalle("A1")) {
+                System.out.println(m);
+            }
         } catch (RemoteException ex) {
             Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
         }

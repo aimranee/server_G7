@@ -12,6 +12,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import util.HibernateUtil;
@@ -139,15 +140,19 @@ public class MachineService extends UnicastRemoteObject implements IDaoMachine {
         return machines;
     }
 
-    public List<Machine> findAllMachinesBySalle(int salleId) throws RemoteException {
+    @Override
+    public List<Machine> findAllMachinesBySalle(String code) throws RemoteException {
         Session session = null;
         Transaction tx = null;
         List<Machine> machines = null;
         try {
             session = HibernateUtil.getSessionFactory().openSession();
             tx = session.beginTransaction();
-            String sql = "SELECT * FROM machine WHERE salle_id = "+ salleId;
-            machines = session.createSQLQuery(sql).list();
+
+            String hql = "FROM Machine m WHERE m.salle.code = :code";
+            Query query = session.createQuery(hql);
+            query.setParameter("code", code);
+            machines = query.list();
             tx.commit();
         } catch (HibernateException ex) {
             if (tx != null) {
